@@ -1,0 +1,11 @@
+﻿{
+  "name": "visitor-registration",
+  "version": "6.0.0",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "cors": "^2.8.5"
+  }
+}

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitor Register | СОВИНТО</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    * { transition: all 0.2s ease; }
+    body { font-family: 'Inter', 'Segoe UI', sans-serif; margin: 0; background: #f4f7fc; }
+    body.dark { background: #1e2a3a; }
+    .sidebar { position: fixed; top: 0; left: 0; height: 100%; width: 260px; background: linear-gradient(180deg, #1e293b, #0f172a); backdrop-filter: blur(10px); padding: 2rem 1rem; box-shadow: 2px 0 12px rgba(0,0,0,0.1); z-index: 1000; transition: 0.3s; }
+    body.dark .sidebar { background: linear-gradient(180deg, #0f172a, #020617); border-right: 1px solid #334155; }
+    .main-content { margin-left: 260px; padding: 1.5rem; }
+    .card-glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(2px); border-radius: 1.5rem; border: none; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+    body.dark .card-glass { background: #2d3e5f !important; color: #f1f5f9; border: 1px solid #4b5e7c; }
+    .btn-gradient { background: linear-gradient(135deg, #4f46e5, #7c3aed); border: none; color: white; border-radius: 2rem; padding: 0.5rem 1.5rem; font-weight: 600; }
+    .btn-gradient:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(79,70,229,0.4); }
+    .nav-link-custom { color: #cbd5e1; padding: 0.75rem 1rem; border-radius: 1rem; margin: 0.25rem 0; font-weight: 500; }
+    .nav-link-custom:hover, .nav-link-custom.active { background: #4f46e5; color: white; }
+    .table-modern th { background: #eef2ff; font-weight: 600; }
+    body.dark .table-modern th { background: #3b5a8c; color: white; }
+    body.dark .table-modern td { color: #e2e8f0; }
+
+    /* === ТЁМНАЯ ТЕМА: все поля ввода и выпадающие списки === */
+    body.dark .form-control,
+    body.dark .form-select,
+    body.dark select,
+    body.dark input,
+    body.dark textarea {
+      background: #1e2a3a !important;
+      border-color: #4b5e7c !important;
+      color: #ffffff !important;
+    }
+    body.dark .form-control:focus,
+    body.dark .form-select:focus,
+    body.dark select:focus,
+    body.dark input:focus,
+    body.dark textarea:focus {
+      background: #2d3e5f !important;
+      border-color: #4f46e5 !important;
+      color: #ffffff !important;
+    }
+    /* Цифры телефона — явное переопределение */
+    body.dark #phoneDigits,
+    body.dark #phoneDigits:focus,
+    body.dark #countryCode,
+    body.dark #countryCode:focus {
+      color: #ffffff !important;
+      background: #1e2a3a !important;
+      -webkit-text-fill-color: #ffffff !important;
+    }
+    /* Placeholder в тёмной теме */
+    body.dark ::placeholder { color: #94a3b8 !important; opacity: 1; }
+    body.dark input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+    /* Опции в select в тёмной теме */
+    body.dark select option { background: #1e2a3a; color: #ffffff; }
+
+    body.dark .main-content h2 { color: #facc15; }
+    body.dark #currentDateTime { color: #facc15 !important; font-weight: 500; }
+    @media (max-width: 768px) { .sidebar { width: 70px; padding: 1rem 0.5rem; } .sidebar span { display: none; } .main-content { margin-left: 70px; } }
+  </style>
+</head>
+<body>
+<div class="sidebar" id="sidebar">
+  <div class="text-center mb-4"><i class="fas fa-building fa-2x text-white"></i><h5 class="text-white mt-2"><span>СОВИНТО</span></h5></div>
+  <nav>
+    <a href="#" class="nav-link-custom d-flex align-items-center" data-tab="registration"><i class="fas fa-user-plus me-3 fa-lg"></i> <span>Регистрация</span></a>
+    <a href="#" class="nav-link-custom d-flex align-items-center" data-tab="visitors"><i class="fas fa-users me-3 fa-lg"></i> <span>Список</span></a>
+    <a href="#" class="nav-link-custom d-flex align-items-center" data-tab="reports"><i class="fas fa-chart-line me-3 fa-lg"></i> <span>Отчёты</span></a>
+  </nav>
+  <div class="mt-auto position-absolute bottom-0 mb-4">
+    <button id="themeToggleSide" class="btn btn-outline-light w-100 rounded-pill"><i id="sideThemeIcon" class="fas fa-moon"></i> <span>Тема</span></button>
+  </div>
+</div>
+<div class="main-content">
+  <div class="d-flex justify-content-between align-items-center mb-4"><h2><i class="fas fa-clipboard-list me-2"></i>Панель управления</h2><div class="text-muted" id="currentDateTime"></div></div>
+  <div id="registrationPanel" class="tab-panel active-panel">
+    <div class="card card-glass p-4"><h4><i class="fas fa-edit me-2"></i>Новый посетитель</h4>
+      <form id="visitorForm">
+        <div class="row mt-3">
+          <div class="col-md-6 mb-3"><label>ФИО *</label><input type="text" class="form-control" name="full_name" required autocomplete="off"></div>
+          <div class="col-md-6 mb-3"><label>Организация *</label><input type="text" class="form-control" name="company" required autocomplete="off"></div>
+          <div class="col-md-6 mb-3"><label>Цель *</label><input type="text" class="form-control" name="purpose" required autocomplete="off"></div>
+          <div class="col-md-6 mb-3"><label>Принимающий *</label><input type="text" class="form-control" name="host_employee" required autocomplete="off"></div>
+          <div class="col-md-6 mb-3">
+            <label>Телефон *</label>
+            <div class="input-group">
+              <select id="countryCode" class="form-select" style="max-width: 200px;">
+                <option value="+7">🇷🇺 +7 (Россия)</option>
+                <option value="+380">🇺🇦 +380 (Украина)</option>
+                <option value="+375">🇧🇾 +375 (Беларусь)</option>
+                <option value="+7">🇰🇿 +7 (Казахстан)</option>
+                <option value="+373">🇲🇩 +373 (Молдова)</option>
+                <option value="+994">🇦🇿 +994 (Азербайджан)</option>
+                <option value="+374">🇦🇲 +374 (Армения)</option>
+                <option value="+996">🇰🇬 +996 (Киргизия)</option>
+                <option value="+992">🇹🇯 +992 (Таджикистан)</option>
+                <option value="+993">🇹🇲 +993 (Туркменистан)</option>
+                <option value="+998">🇺🇿 +998 (Узбекистан)</option>
+              </select>
+              <input type="tel" id="phoneDigits" class="form-control" placeholder="1234567890" maxlength="10" inputmode="numeric">
+            </div>
+            <input type="hidden" name="contact_phone" id="fullPhone">
+          </div>
+          <div class="col-12 mb-3"><label>Примечания</label><textarea class="form-control" name="notes" rows="2"></textarea></div>
+        </div>
+        <button class="btn btn-gradient"><i class="fas fa-save me-2"></i>Зарегистрировать</button>
+      </form>
+      <div id="regMessage" class="mt-3"></div>
+    </div>
+  </div>
+  <div id="visitorsPanel" class="tab-panel" style="display:none">
+    <div class="card card-glass p-4">
+      <div class="row mb-3 g-2">
+        <div class="col-md-3"><label>Дата с</label><input type="date" id="filterDateFrom" class="form-control"></div>
+        <div class="col-md-3"><label>Дата по</label><input type="date" id="filterDateTo" class="form-control"></div>
+        <div class="col-md-4"><label>Поиск</label><input id="filterSearch" class="form-control" placeholder="ФИО, организация, телефон..."></div>
+        <div class="col-md-2 d-flex gap-2"><button id="applyFilter" class="btn btn-gradient w-100"><i class="fas fa-search"></i> Фильтр</button>
+        <button id="resetFilter" class="btn btn-secondary w-100"><i class="fas fa-undo"></i> Сброс</button></div>
+      </div>
+      <div class="table-responsive"><table class="table table-hover table-modern"><thead><tr><th>ID</th><th>ФИО</th><th>Компания</th><th>Цель</th><th>Принимающий</th><th>Вход</th><th>Выход</th><th>Действия</th></tr></thead><tbody id="visitorsTableBody"></tbody></table></div>
+    </div>
+  </div>
+  <div id="reportsPanel" class="tab-panel" style="display:none">
+    <div class="card card-glass p-4">
+      <div class="row g-2 align-items-end">
+        <div class="col-md-3"><label>Дата с</label><input type="date" id="reportDateFrom" class="form-control"></div>
+        <div class="col-md-3"><label>Дата по</label><input type="date" id="reportDateTo" class="form-control"></div>
+        <div class="col-md-3"><button id="generateReport" class="btn btn-gradient w-100"><i class="fas fa-chart-bar"></i> Сформировать</button></div>
+        <div class="col-md-3"><button id="downloadCSV" class="btn btn-gradient w-100"><i class="fas fa-file-csv"></i> CSV</button></div>
+      </div>
+      <div id="reportOutput" class="mt-4"></div>
+      <canvas id="purposeChart" width="400" height="200" class="mt-4"></canvas>
+      <canvas id="hostChart" width="400" height="200" class="mt-4"></canvas>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
