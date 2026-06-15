@@ -60,6 +60,35 @@
 
     body.dark .main-content h2 { color: #facc15; }
     body.dark #currentDateTime { color: #facc15 !important; font-weight: 500; }
+
+    /* Текст в строках таблицы */
+    body.dark .table-modern td,
+    body.dark .table-modern td strong,
+    body.dark .table tbody td,
+    body.dark .table tbody tr td { color: #e2e8f0 !important; }
+
+    /* Фон строк таблицы */
+    body.dark .table-modern tbody tr { background-color: #2d3e5f !important; border-color: #4b5e7c !important; }
+
+    /* Фон при наведении */
+    body.dark .table-hover tbody tr:hover,
+    body.dark .table-hover tbody tr:hover td { background-color: #3b5a8c !important; color: #ffffff !important; }
+
+    /* Шапка таблицы */
+    body.dark .table-modern thead th,
+    body.dark .table thead th { background-color: #1e3a5f !important; color: #ffffff !important; border-color: #4b5e7c !important; }
+
+    /* Bootstrap CSS-переменные таблицы для тёмной темы */
+    body.dark .table-modern,
+    body.dark .table {
+      border-color: #4b5e7c !important;
+      color: #e2e8f0 !important;
+      --bs-table-color: #e2e8f0 !important;
+      --bs-table-bg: #2d3e5f !important;
+      --bs-table-border-color: #4b5e7c !important;
+      --bs-table-hover-color: #ffffff !important;
+      --bs-table-hover-bg: #3b5a8c !important;
+    }
     @media (max-width: 768px) { .sidebar { width: 70px; padding: 1rem 0.5rem; } .sidebar span { display: none; } .main-content { margin-left: 70px; } }
   </style>
 </head>
@@ -139,6 +168,6 @@
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
